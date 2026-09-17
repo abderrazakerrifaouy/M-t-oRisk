@@ -1,0 +1,78 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Data
+# =========================
+
+# Bronze / Silver / Gold generated data
+data/bronze/*
+data/silver/*
+data/gold/*
+
+# Keep the directories
+!data/bronze/.gitkeep
+!data/silver/.gitkeep
+!data/gold/.gitkeep
+
+# =========================
+# PostgreSQL
+# =========================
+postgres_data/
+
+# =========================
+# Airflow
+# =========================
+airflow_logs/
+airflow_data/
+
+# =========================
+# Docker
+# =========================
+docker-data/
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
