@@ -45,7 +45,7 @@ with DAG(
     description="Pipeline ETL complet : extraction API -> transformation -> loading PostgreSQL",
     default_args=default_args,
     schedule_interval="@daily",       
-    start_date=datetime(2026, 9, 1),
+    start_date=datetime(2026, 9, 18),
     catchup=False,
     tags=["meteo", "etl", "m-t-orisk"],
 ) as dag:

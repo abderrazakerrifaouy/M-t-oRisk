@@ -10,25 +10,62 @@ class QueryRunner:
     def __init__(self, session: Session):
         self.session = session
 
-    def top_temperatures(self, limit: int = 10):
-        return (
+
+    def top_temperatures(
+    self,
+    limit: int = 10,
+    start_date=None,
+    end_date=None
+    ):
+        query = (
             self.session.query(
-                City.city, City.country, Meteo.date, Meteo.temperature_max
+                City.city,
+                City.country,
+                func.max(Meteo.temperature_max).label("temperature_max")
             )
             .join(Meteo, Meteo.city_id == City.id)
-            .order_by(desc(Meteo.temperature_max))
+        )
+
+        if start_date:
+            query = query.filter(Meteo.date >= start_date)
+
+        if end_date:
+            query = query.filter(Meteo.date <= end_date)
+
+        return (
+            query
+            .group_by(City.id, City.city, City.country)
+            .order_by(desc("temperature_max"))
             .limit(limit)
             .all()
         )
 
-    def top_precipitations(self, limit: int = 10):
-        return (
+
+    def top_precipitations(
+    self,
+    limit: int = 10,
+    start_date=None,
+    end_date=None
+    ):
+        query = (
             self.session.query(
-                City.city, City.country, Meteo.date,
-                Meteo.precipitation, Meteo.precipitation_probability
+                City.city,
+                City.country,
+                func.max(Meteo.precipitation).label("precipitation")
             )
             .join(Meteo, Meteo.city_id == City.id)
-            .order_by(desc(Meteo.precipitation))
+        )
+
+        if start_date:
+            query = query.filter(Meteo.date >= start_date)
+
+        if end_date:
+            query = query.filter(Meteo.date <= end_date)
+
+        return (
+            query
+            .group_by(City.id, City.city, City.country)
+            .order_by(desc("precipitation"))
             .limit(limit)
             .all()
         )

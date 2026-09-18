@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 DATABASE_URL = "postgresql+psycopg2://abderrazak:abderrazak@postgres:5432/mtoRisk"
 
@@ -12,8 +13,7 @@ SessionLocal = sessionmaker(
 )
 
 
-class Base(DeclarativeBase):
-    pass
+Base = declarative_base()
 
 def create_tables():
     from src.loading.city import City
