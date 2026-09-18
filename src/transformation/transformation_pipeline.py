@@ -15,24 +15,37 @@ class TransformationPipeline:
         self.merging = Merging(self.cities_df, self.weather_df)
 
     def run(self):
-        merged_df = self.merging.merge()
-        transformed_df = WeatherTransformer.transform(merged_df)
-        print("Transformed DataFrame:")
-        print(transformed_df.head())
-        standardized_df = StandardizeTypes.standardize(transformed_df)
-        data_quality_checker = DataQualityChecker(standardized_df)
-        data_quality_checker.float_values()
-        data_quality_checker.check_temperature()
-        data_quality_checker.check_precipitation()
-        data_quality_checker.fixed_missing_values()
-        data_quality_checker.delete_duplicates()
-        cleaned_df = data_quality_checker.get_dataframe()
-        cleaned_df = Category.add_Categories_temp(cleaned_df)
-        cleaned_df = Category.add_Categories_prec(cleaned_df)
-        cleaned_df = Category.add_Categories_wind(cleaned_df)
-        cleaned_df = RiskScore.calculate_risk_score(cleaned_df)
-        cleaned_df = Niveau.add_niveau(cleaned_df)
 
+        merged_df = self.merging.merge()
+
+        transformed_df = WeatherTransformer.transform(merged_df)
+
+        standardized_df = StandardizeTypes.standardize(transformed_df)
+
+        data_quality_checker = DataQualityChecker(standardized_df)
+
+        data_quality_checker.float_values()
+
+        data_quality_checker.check_temperature()
+
+        data_quality_checker.check_precipitation()
+
+        data_quality_checker.fixed_missing_values()
+
+        data_quality_checker.delete_duplicates()
+
+        cleaned_df = data_quality_checker.get_dataframe()
+
+        cleaned_df = Category.add_Categories_temp(cleaned_df)
+
+        cleaned_df = Category.add_Categories_prec(cleaned_df)
+
+        cleaned_df = Category.add_Categories_wind(cleaned_df)
+
+        cleaned_df = RiskScore.calculate_risk_score(cleaned_df)
+
+        cleaned_df = Niveau.add_niveau(cleaned_df)
+        
         cleaned_df.to_csv('data/silver/cleaned_data.csv', index=False)
 
 

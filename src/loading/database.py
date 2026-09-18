@@ -1,17 +1,23 @@
-import pandas as pd
-import sqlalchemy as sa
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
+
+DATABASE_URL = "postgresql+psycopg2://abderrazak:abderrazak@localhost:5432/mtoRisk"
+
+engine = create_engine(DATABASE_URL)
+
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False
+)
 
 
-class DatabaseLoader:
-    engine = sa.create_engine(
-        "postgresql+psycopg2://abderrazak:abderrazak@localhost:5432/m-toRisk"
-    )
-    def __init__(self):
-        self.verify_connection()
+class Base(DeclarativeBase):
+    pass
 
-    def verify_connection(self):
-        try:
-            with self.engine.connect() as connection:
-                print("Database connection successful.")
-        except Exception as e:
-            print(f"Database connection failed: {e}")
+def create_tables():
+    from src.loading.city import City
+    from src.loading.meteo import Meteo
+    from src.loading.risk import Risk
+
+    Base.metadata.create_all(bind=engine)

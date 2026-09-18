@@ -1,20 +1,18 @@
-#postgres + pgAdmin
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:15
     container_name: postgres
     environment:
       POSTGRES_USER: abderrazak
       POSTGRES_PASSWORD: abderrazak
-      POSTGRES_DB: m-toRisk
+      POSTGRES_DB: mtoRisk
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - m-toRisk-network
+      - mtoRisk-network
+
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pgadmin
@@ -22,13 +20,15 @@ services:
       PGADMIN_DEFAULT_EMAIL: ana@ana.com
       PGADMIN_DEFAULT_PASSWORD: ana
     ports:
-      - "5050:5050"
+      - "5050:80"
     networks:
-      - m-toRisk-network
+      - mtoRisk-network
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:
 
 networks:
-  m-toRisk-network:
+  mtoRisk-network:
     driver: bridge

@@ -1,19 +1,4 @@
-from src.transformation.transformation_pipeline import TransformationPipeline
-from src.extraction.extraction_pipeline import ExtractionPipeline
-from src.loading.database import DatabaseLoader
+from src.loading.loading_pipeline import LoadingPipeline
 
 
-
-database_loader = DatabaseLoader()
-
-
-
-
-
-
-
-
-
-
-
-
+LoadingPipeline(silver_path="data/silver/cleaned_data.csv").run()
