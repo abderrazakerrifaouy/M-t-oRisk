@@ -22,6 +22,3 @@ class LoadingPipeline:
         self.load(data)
 
 
-# if __name__ == "__main__":
-#     pipeline = LoadingPipeline(silver_path="data/silver/cleaned_data.csv")
-#     pipeline.run()
