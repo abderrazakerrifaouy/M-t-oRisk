@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from src.loading.city import City
 from src.loading.meteo import Meteo
 from src.loading.risk import Risk
+from src.exceptions import LoadingError
 
 
 class Inserter:
@@ -87,8 +88,8 @@ class Inserter:
             self.cleanup_old_dates(session)
 
             session.commit()
-        except Exception as e:
+        except Exception as exc:
             session.rollback()
-            raise e
+            raise LoadingError("Database transaction failed while loading weather data") from exc
         finally:
             session.close()

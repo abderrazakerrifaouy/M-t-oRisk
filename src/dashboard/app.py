@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from sqlalchemy.exc import SQLAlchemyError
 
 from src.loading.database import SessionLocal
 from src.loading.city import City
 from src.loading.meteo import Meteo
 from src.loading.risk import Risk
+from src.exceptions import LoadingError
 
 
 st.set_page_config(page_title="Dashboard Météo & Risques - Maroc", layout="wide")
@@ -14,8 +16,9 @@ st.set_page_config(page_title="Dashboard Météo & Risques - Maroc", layout="wid
 
 @st.cache_data(ttl=300)
 def load_data():
-    session = SessionLocal()
+    session = None
     try:
+        session = SessionLocal()
         query = (
             session.query(
                 City.city,
@@ -45,11 +48,20 @@ def load_data():
         ])
         df["date"] = pd.to_datetime(df["date"])
         return df
+    except SQLAlchemyError as exc:
+        raise LoadingError("Dashboard could not read data from PostgreSQL") from exc
+    except (KeyError, TypeError, ValueError) as exc:
+        raise LoadingError("Dashboard received invalid data from PostgreSQL") from exc
     finally:
-        session.close()
+        if session is not None:
+            session.close()
 
 
-df = load_data()
+try:
+    df = load_data()
+except LoadingError as exc:
+    st.error(str(exc))
+    st.stop()
 
 if df.empty:
     st.warning("Aucune donnée disponible. Lancez d'abord le pipeline ETL (extraction → transformation → loading).")

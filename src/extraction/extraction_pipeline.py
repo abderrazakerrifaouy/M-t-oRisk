@@ -2,6 +2,7 @@ import pandas as pd
 from src.extraction.cities_extractor import CitiesExtractor
 from src.extraction.api_client import APIClient
 from src.extraction.weather_extractor import WeatherExtractor
+from src.exceptions import ExtractionError
 
 class ExtractionPipeline:
     
@@ -11,8 +12,13 @@ class ExtractionPipeline:
         self.weather_extractor = WeatherExtractor(self.api_client)
 
     def run(self):
-        cities = self.cities_extractor.extract()
-        data = self.weather_extractor.extract(cities)
-        data_df = pd.DataFrame(data)
-        data_df.to_json("data/bronze/weather_data.json", orient="records", indent=4)
+        try:
+            cities = self.cities_extractor.extract()
+            data = self.weather_extractor.extract(cities)
+            data_df = pd.DataFrame(data)
+            data_df.to_json("data/bronze/weather_data.json", orient="records", indent=4)
+        except ExtractionError:
+            raise
+        except (OSError, TypeError, ValueError) as exc:
+            raise ExtractionError("Extraction output could not be written") from exc
 

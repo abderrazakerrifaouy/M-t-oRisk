@@ -1,5 +1,8 @@
 from src.loading.database import SessionLocal
 from src.analytics.queries import QueryRunner
+from sqlalchemy.exc import SQLAlchemyError
+
+from src.exceptions import AnalyticsError
 
 
 class AnalyticsPipeline:
@@ -7,8 +10,8 @@ class AnalyticsPipeline:
         self.session_factory = session_factory
 
     def run(self):
-        session = self.session_factory()
         try:
+            session = self.session_factory()
             runner = QueryRunner(session)
 
             print("\nTop températures :")
@@ -34,7 +37,12 @@ class AnalyticsPipeline:
             print("\nStatistiques globales :")
             print(runner.global_stats())
 
+        except SQLAlchemyError as exc:
+            raise AnalyticsError("Analytics queries failed") from exc
+        except SQLAlchemyError as exc:
+            raise AnalyticsError("Analytics queries failed") from exc
         finally:
-            session.close()
+            if "session" in locals():
+                session.close()
 
 

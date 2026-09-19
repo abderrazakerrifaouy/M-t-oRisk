@@ -2,6 +2,9 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.exceptions import AirflowException
+
+from src.exceptions import PipelineError
 
 
 default_args = {
@@ -15,21 +18,30 @@ default_args = {
 
 
 def run_extraction(**context):
-    from src.extraction.extraction_pipeline import ExtractionPipeline
-    pipeline = ExtractionPipeline("data/bronze/ma.csv", "https://api.open-meteo.com/v1/forecast")
-    pipeline.run()
+    try:
+        from src.extraction.extraction_pipeline import ExtractionPipeline
+        pipeline = ExtractionPipeline("data/bronze/ma.csv", "https://api.open-meteo.com/v1/forecast")
+        pipeline.run()
+    except PipelineError as exc:
+        raise AirflowException(f"Extraction task failed: {exc}") from exc
 
 
 def run_transformation(**context):
-    from src.transformation.transformation_pipeline import TransformationPipeline
-    pipeline = TransformationPipeline("data/bronze/ma.csv", "data/bronze/weather_data.json")
-    pipeline.run()
+    try:
+        from src.transformation.transformation_pipeline import TransformationPipeline
+        pipeline = TransformationPipeline("data/bronze/ma.csv", "data/bronze/weather_data.json")
+        pipeline.run()
+    except PipelineError as exc:
+        raise AirflowException(f"Transformation task failed: {exc}") from exc
 
 
 def run_loading(**context):
-    from src.loading.loading_pipeline import LoadingPipeline
-    pipeline = LoadingPipeline(silver_path="data/silver/cleaned_data.csv")
-    pipeline.run()
+    try:
+        from src.loading.loading_pipeline import LoadingPipeline
+        pipeline = LoadingPipeline(silver_path="data/silver/cleaned_data.csv")
+        pipeline.run()
+    except PipelineError as exc:
+        raise AirflowException(f"Loading task failed: {exc}") from exc
 
 
 def refresh_dashboard_cache(**context):
