@@ -44,13 +44,6 @@ def run_loading(**context):
         raise AirflowException(f"Loading task failed: {exc}") from exc
 
 
-def refresh_dashboard_cache(**context):
-    """
-    Streamlit @st.cache_data kay refreshi wa7dou b TTL,
-    hna ghi log conditionnel bach ntbeto executé (webhook/notification mstaqbaliya).
-    """
-    print("[Airflow] Données rafraîchies dans PostgreSQL - dashboard mis à jour au prochain TTL.")
-
 
 with DAG(
     dag_id="meteo_risk_pipeline",
@@ -77,9 +70,4 @@ with DAG(
         python_callable=run_loading,
     )
 
-    refresh_task = PythonOperator(
-        task_id="refresh_dashboard",
-        python_callable=refresh_dashboard_cache,
-    )
-
-    extraction_task >> transformation_task >> loading_task >> refresh_task
+    extraction_task >> transformation_task >> loading_task 
